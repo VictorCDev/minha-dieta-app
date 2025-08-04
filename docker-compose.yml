@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0 # Define a imagem do MySQL que será usada (versão 8.0)
+    container_name: dieta-mysql # Nome amigável para o seu contêiner MySQL
+    restart: always # Garante que o contêiner reinicie automaticamente se parar
+    environment:
+      MYSQL_ROOT_PASSWORD: root # Senha para o usuário 'root' (para desenvolvimento, pode ser simples)
+      MYSQL_DATABASE: dieta_db # Nome do banco de dados que será criado automaticamente
+      MYSQL_USER: user # Nome de um novo usuário para o banco de dados
+      MYSQL_PASSWORD: password # Senha para o novo usuário
+    ports:
+      - "3306:3306" # Mapeia a porta 3306 do seu computador para a porta 3306 do contêiner
+    volumes:
+      - db_data:/var/lib/mysql # Persiste os dados do banco de dados em um volume nomeado
+    healthcheck: # ESTA É A SEÇÃO CRUCIAL QUE FALTAVA
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"] # Comando para verificar a saúde do MySQL
+      interval: 10s # Verifica a cada 10 segundos
+      timeout: 5s # Espera até 5 segundos pelo resultado do teste
+      retries: 5 # Tenta 5 vezes antes de considerar o serviço não saudável
+
+  backend:
+    build: ./dieta-api # Indica ao Docker para construir a imagem a partir da pasta dieta-api
+    container_name: dieta-backend # Nome amigável para o seu contêiner backend
+    restart: on-failure # Reinicia apenas se houver falha
+    ports:
+      - "8080:8080" # Mapeia a porta 8080 do seu computador para a porta 8080 do contêiner
+    environment: # Variáveis de ambiente para a aplicação Spring Boot dentro do contêiner
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/dieta_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=TRUE
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update # Para desenvolvimento, cria/atualiza tabelas automaticamente
+    depends_on:
+      db:
+        condition: service_healthy # AGORA FUNCIONARÁ, POIS 'db' TEM UM HEALTHCHECK
+
+volumes:
+  db_data: # Define o volume nomeado para persistência dos dados
