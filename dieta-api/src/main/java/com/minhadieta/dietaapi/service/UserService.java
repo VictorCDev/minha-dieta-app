@@ -4,6 +4,8 @@ import com.minhadieta.dietaapi.model.AppUser;
 import com.minhadieta.dietaapi.repository.UserRepository;
 import com.minhadieta.dietaapi.dto.UserRequest;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder; // Impor
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,8 +51,11 @@ public class UserService implements UserDetailsService {
         AppUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o nome: " + username));
 
-        // Retorna um objeto User do Spring Security
-        return new User(user.getUsername(), user.getPasswordHash(), new ArrayList<>()); // No momento, sem roles/authorities
+        //Converte a string de 'role' em uma coleção de GrantedAuthority
+        Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole()));
+
+        // Retorna um objeto User do Spring Security com as roles/authorities
+        return new User(user.getUsername(), user.getPasswordHash(), authorities);
     }
 
     @Transactional
@@ -68,6 +74,9 @@ public class UserService implements UserDetailsService {
         newUser.setPasswordHash(passwordEncoder.encode(userRequest.getPassword()));
         newUser.setEmail(userRequest.getEmail());
         newUser.setRegistrationDate(LocalDateTime.now()); // Define a data de cadastro atual
+
+        // Atribui a role padrão para novos usuários
+        newUser.setRole("ROLE_USER");
 
         // Salva o novo usuário no banco de dados
         return userRepository.save(newUser);

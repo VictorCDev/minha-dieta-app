@@ -26,4 +26,6 @@ public class AppUser {
     @Column(name = "registration_date", nullable = false)
     private LocalDateTime registrationDate;
 
+    @Column(name = "role", nullable = false, length = 20)
+    private String role;// Ex: "ROLE_USER", "ROLE_ADMIN"
 }
