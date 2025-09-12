@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,5 +30,8 @@ public class DietProfile {
     private AppUser user; // O usuário a quem este perfil de dieta pertence
 
     @Column(name = "is_active", nullable = false)
-        private Boolean isActive = false; // Indica se este perfil está ativo para o usuário no momento
+    private Boolean isActive = false; // Indica se este perfil está ativo para o usuário no momento
+
+    @OneToMany(mappedBy = "dietProfile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<MealConfiguration> mealConfigurations;
 }

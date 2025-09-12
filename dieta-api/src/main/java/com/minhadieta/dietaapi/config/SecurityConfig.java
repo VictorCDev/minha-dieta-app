@@ -45,6 +45,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/users/{id}").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/users/{id}").hasRole("ADMIN") // Somente ADMIN pode deletar usuários
 
+                        //Endpoints Ingredients
+                        .requestMatchers(HttpMethod.GET, "/api/ingredients/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/ingredients/**").hasRole("ADMIN")
+
                         // Todas as outras requisições precisam ser autenticadas
                         .anyRequest().authenticated()
                 )

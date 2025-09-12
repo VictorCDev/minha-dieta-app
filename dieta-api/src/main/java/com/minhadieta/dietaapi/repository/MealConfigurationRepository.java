@@ -1,7 +1,7 @@
 package com.minhadieta.dietaapi.repository;
 
 import com.minhadieta.dietaapi.model.MealConfiguration;
-import com.minhadieta.dietaapi.model.DietProfile; // Importação necessária
+import com.minhadieta.dietaapi.model.DietProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,21 +11,25 @@ import java.util.Optional;
 @Repository
 public interface MealConfigurationRepository extends JpaRepository<MealConfiguration, Long> {
 
-    // através do DietProfile, ordenadas pela mealOrder (nome correto da propriedade)
-    List<MealConfiguration> findByDietProfile_User_IdOrderByMealOrderAsc(Long userId);
+    // MÉTODO ESSENCIAL 1: Usado no Service para buscar uma refeição específica
+    // garantindo que ela pertence ao perfil de dieta correto. É a chave para a
+    // segurança nas operações de GET (por id), UPDATE e DELETE.
+    Optional<MealConfiguration> findByIdAndDietProfile_Id(Long id, Long dietProfileId);
 
-    // e pelo usuário (através do DietProfile)
-    Optional<MealConfiguration> findByMealNameAndDietProfile_User_Id(String mealName, Long userId);
-
-    // Encontra todas as configurações de refeição para um perfil de dieta específico
+    // MÉTODO ESSENCIAL 2: Usado para buscar todas as refeições de um perfil.
+    // Embora o Service consiga essa lista através da entidade DietProfile, este
+    // método é uma alternativa direta e eficiente.
     List<MealConfiguration> findByDietProfile(DietProfile dietProfile);
 
-    // Encontra uma configuração de refeição por mealName e o DietProfile específico
-    Optional<MealConfiguration> findByMealNameAndDietProfile(String mealName, DietProfile dietProfile);
+    /*
+     * SEUS OUTROS MÉTODOS (opcionais, mas muito bons):
+     *
+     * findByDietProfile_User_IdOrderByMealOrderAsc(Long userId);
+     * -> Ótimo para buscar todas as refeições de um usuário de uma vez, já ordenadas.
+     *
+     * findByMealNameAndDietProfile_User_Id(String mealName, Long userId);
+     * -> Ótimo para validações complexas, como garantir que o nome de uma refeição
+     * é único para todo um usuário, e não apenas para um perfil.
+     */
 
-    // Encontra uma configuração de refeição por ID e o DietProfile específico
-    Optional<MealConfiguration> findByIdAndDietProfile(Long id, DietProfile dietProfile);
-
-    // Encontra uma configuração de refeição por ID e o DietProfile do usuário
-    Optional<MealConfiguration> findByIdAndDietProfile_User_Id(Long id, Long userId);
 }

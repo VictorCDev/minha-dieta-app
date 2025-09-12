@@ -11,4 +11,5 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
     // Exemplo de método personalizado:
     // Encontra um ingrediente pelo nome (útil para verificar se já existe antes de adicionar um novo)
     Optional<Ingredient> findByName(String name);
+    Optional<Ingredient> findByNameIgnoreCase(String name);
 }

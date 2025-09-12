@@ -2,7 +2,6 @@ package com.minhadieta.dietaapi.repository;
 
 import com.minhadieta.dietaapi.model.AppUser;
 import com.minhadieta.dietaapi.model.DietProfile;
-import com.minhadieta.dietaapi.model.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,5 +23,5 @@ public interface DietProfileRepository extends JpaRepository<DietProfile, Long> 
     Optional<DietProfile> findByUserAndIsActiveTrue(AppUser user);
 
     // Método para buscar perfis de dieta por ID de usuário (equivalente ao findByUsuario_Id)
-    List<DietProfile> findByUser_Id(Long userId);
+    Optional<DietProfile> findByIdAndUser_Id(Long id, Long userId);
 }
