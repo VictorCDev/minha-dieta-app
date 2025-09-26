@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,9 +24,11 @@ public class MealConfiguration {
     @Column(name = "meal_name", nullable = false, length = 100)
     private String mealName; // Ex: "Café da Manhã", "Almoço", "Lanche da Tarde"
 
-    // NOVO RELACIONAMENTO: Muitos-para-Um com PerfilDieta
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "diet_profile_id", nullable = false) // Coluna da chave estrangeira
     private DietProfile dietProfile; // O perfil de dieta ao qual esta configuração de refeição pertence
+
+    @OneToMany(mappedBy = "mealConfiguration", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<MealItem> mealItems; // Lista dos ingredientes/itens desta refeição
 
 }

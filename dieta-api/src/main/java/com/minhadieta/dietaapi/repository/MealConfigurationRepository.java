@@ -28,4 +28,8 @@ public interface MealConfigurationRepository extends JpaRepository<MealConfigura
 
     // Encontra uma configuração de refeição por ID e o DietProfile do usuário
     Optional<MealConfiguration> findByIdAndDietProfile_User_Id(Long id, Long userId);
+
+    // Busca uma MealConfiguration pelo seu ID, pelo ID do seu DietProfile e pelo ID do User do DietProfile.
+    // Isso garante a posse completa da hierarquia.
+    Optional<MealConfiguration> findByIdAndDietProfile_IdAndDietProfile_User_Id(Long mealId, Long dietProfileId, Long userId);
 }
